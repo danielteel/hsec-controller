@@ -1,42 +1,56 @@
 
 const {exec, execSync} = require('node:child_process');
-const dotenv = require('dotenv');
-dotenv.config({ path: 'env.env' });
-
-const download = require('github-directory-downloader');
-const { mkdirSync }=require('node:fs');
-const path = require('node:path');
 const process = require('node:process');
+const download = require('github-directory-downloader');
+const { mkdirSync, cpSync, rmSync }=require('node:fs');
+const path = require('node:path');
+const chalk = require('chalk');
+
+require('dotenv').config({ path: 'env.env' });
 
 let backendProcess=null;
 
-Reset = "\x1b[0m"
-Bright = "\x1b[1m"
-Dim = "\x1b[2m"
-Underscore = "\x1b[4m"
-Blink = "\x1b[5m"
-Reverse = "\x1b[7m"
-Hidden = "\x1b[8m"
+let status={
+    front:{
+        dir: false,
+        downloaded: false
+    },
+    back:{
+        dir: false,
+        downloaded: false,
+        installed: false,
+        messages:[],
+        running: false
+    }
+};
 
-FgBlack = "\x1b[30m"
-FgRed = "\x1b[31m"
-FgGreen = "\x1b[32m"
-FgYellow = "\x1b[33m"
-FgBlue = "\x1b[34m"
-FgMagenta = "\x1b[35m"
-FgCyan = "\x1b[36m"
-FgWhite = "\x1b[37m"
-FgGray = "\x1b[90m"
+function updateScreen(which, key, val){
+    if (which==='back' && key==='messages'){
+        status.back.messages.push(val);
+        if (status.back.messages.length>5){
+            status.back.messages.shift();
+        }
+    }else{
+        status[which][key]=val;
+    }
+    console.clear();
+    console.log(chalk.yellow('HSEC-CONTROLLER'));
+    console.log();
+    console.log(chalk.cyan('FRONT'));
+    console.log(status.front.dir?chalk.green('X'):chalk.yellow('.'),chalk.white('DIRECTORY'));
+    console.log(status.front.downloaded?chalk.green('X'):chalk.yellow('.'),chalk.white('DOWNLOADED'));
+    console.log();
 
-BgBlack = "\x1b[40m"
-BgRed = "\x1b[41m"
-BgGreen = "\x1b[42m"
-BgYellow = "\x1b[43m"
-BgBlue = "\x1b[44m"
-BgMagenta = "\x1b[45m"
-BgCyan = "\x1b[46m"
-BgWhite = "\x1b[47m"
-BgGray = "\x1b[100m"
+    console.log(chalk.cyan('BACK'));
+    console.log(status.back.dir?chalk.green('X'):chalk.yellow('.'),chalk.white('DIRECTORY'));
+    console.log(status.back.downloaded?chalk.green('X'):chalk.yellow('.'),chalk.white('DOWNLOADED'));
+    console.log(status.back.installed?chalk.green('X'):chalk.yellow('.'),chalk.white('INSTALLED'));
+    console.log(status.back.running?chalk.green('X'):chalk.yellow('.'),chalk.white('RUNNING'));
+    console.log(chalk.yellow('MESSAGES'));
+    for (let m of status.back.messages){
+        console.log('\t', m);
+    }
+}
 
 doFrontend();
 doBackend();
@@ -49,14 +63,36 @@ function doFrontend(){
     }catch (e){
         if (e.code!=='EEXIST'){
             console.log(e);
+            process.exit(-1);
         }
     }
+
+    try {
+        rmSync('/mnt/ramdisk/front', { recursive: true, force: true });
+    }catch (e){}
+
+    try {
+        mkdirSync('/mnt/ramdisk/front');
+    }catch (e){
+        if (e.code!=='EEXIST'){
+            console.log(e);
+            process.exit(-1);
+        }
+    }
+
+
+    updateScreen('front', 'dir', true);
+
     download('https://github.com/danielteel/hsec/tree/main/build', './front', {requests: 1, muteLog: true}).then( (stats) => {
-        console.log(FgMagenta,'FRONTEND FETCHED =', stats.success);
+        try {
+            cpSync('./front', '/mnt/ramdisk/front');
+        }catch (e){}
+        updateScreen('front', 'downloaded', true);
     }).catch(e=>{
         console.log(e);
         process.exit(-1);
     })
+    
 }
 
 
@@ -73,26 +109,33 @@ function doBackend(){
             process.exit(-1);
         }
     }
+    
+    updateScreen('back', 'dir', true);
     try{
-        execSync('git clone https://github.com/danielteel/hsec-api', {stdio: 'inherit', cwd: path.join(__dirname, 'back') });
+        execSync('git clone https://github.com/danielteel/hsec-api', {cwd: path.join(__dirname, 'back') });
     }catch{}
     try{
-        execSync('git pull', {stdio: 'inherit', cwd: path.join(__dirname, 'back', 'hsec-api') });
+        execSync('git pull', {cwd: path.join(__dirname, 'back', 'hsec-api') });
     }catch{}
+    
+    updateScreen('back', 'downloaded', true);
     try {
-        execSync('npm install', {stdio: 'inherit', cwd: path.join(__dirname, 'back', 'hsec-api') });
+        execSync('npm install', {cwd: path.join(__dirname, 'back', 'hsec-api') });
     }catch{}
+    updateScreen('back', 'installed', true);
 
     backendProcess = exec('node index', {cwd: path.join(__dirname, 'back', 'hsec-api'), env: {...process.env}});
-    console.log(FgMagenta, 'API PROCESS STARTED');
+
+    updateScreen('back', 'running', true);
+
     backendProcess.on('exit', (code)=>{
+        updateScreen('back', 'running', false);
         backendProcess=null;
-        console.log(FgMagenta, 'API PROCESS EXIT');
     });
     backendProcess.stderr.on('data', (d)=>{
-        console.log(FgRed, 'API STDERR', Reset , d);
+        updateScreen('back', 'messages', d);
     });
     backendProcess.stdout.on('data', (d)=>{
-        console.log(FgGreen, 'API STDOUT:', Reset , d);
+        updateScreen('back', 'messages', d);
     });
 }

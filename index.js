@@ -12,6 +12,10 @@ require('dotenv').config({ path: 'env.env' });
 let backendProcess = null;
 
 let status = {
+    ffmpeg:{
+        dir: false,
+        active: false
+    },
     webhook: {
         active: false,
         messages: [],
@@ -30,6 +34,12 @@ let status = {
         maxMessages: 10
     }
 };
+
+
+doCamProcess();
+doFrontend();
+doBackend();
+
 
 app.post('/backend/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
@@ -65,6 +75,10 @@ function updateScreen(which, key, val) {
     console.clear();
     console.log(chalk.yellow('HSEC-CONTROLLER'));
     console.log();
+    console.log(chalk.cyan('FFMPEG'));
+    console.log(status.ffmpeg.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
+    console.log(status.ffmpeg.active ? chalk.green('X') : chalk.yellow('.'), chalk.white('ACTIVE'));
+    console.log();
     console.log(chalk.cyan('WEBHOOK'));
     console.log(status.webhook.active ? chalk.green('X') : chalk.yellow('.'), chalk.white('ACTIVE'));
     console.log(chalk.yellow('MESSAGES'));
@@ -87,10 +101,6 @@ function updateScreen(which, key, val) {
         console.log('\t', m.trim());
     }
 }
-
-doFrontend();
-doBackend();
-
 
 //Get front end
 function doFrontend() {
@@ -177,7 +187,6 @@ function doBackend() {
 
     backendProcess.on('exit', (code) => {
         updateScreen('back', 'running', false);
-        backendProcess = null;
     });
     backendProcess.stderr.on('data', (d) => {
         updateScreen('back', 'messages', d);
@@ -185,4 +194,39 @@ function doBackend() {
     backendProcess.stdout.on('data', (d) => {
         updateScreen('back', 'messages', d);
     });
+}
+
+function doCamProcess(){
+    try {
+        mkdirSync('/mnt/ramdisk/cam');
+    }catch (e){        
+        if (e.code !== 'EEXIST') {
+            console.log(e);
+            process.exit(-1);
+        }
+    }
+    updateScreen('ffmpeg','dir', true);
+    const args = [
+        '-i', '/dev/video0',
+        '-s', '960x540',
+        '-r', '4',
+        '-g', '5',
+        '-c:v', 'libx264',
+        '-crf', '28',
+        '-preset', 'veryfast',
+        '-tune', 'zerolatency',
+        '-hls_time', '1.25',
+        '-hls_list_size', '3',
+        '-hls_flags', 'delete_segments',
+        '/mnt/ramdisk/cam/allcamL.m3u8',
+    ]
+    const child = spawn('ffmpeg', args);
+
+    updateScreen('ffmpeg','active', true);
+    
+    child.on('exit', (code) => {
+        updateScreen('ffmpeg','active', false);
+    });
+    child.stderr.on('data', (data) => null);
+    child.stdout.on('data', (data) => null);
 }

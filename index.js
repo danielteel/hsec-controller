@@ -32,20 +32,20 @@ let status = {
 };
 
 app.post('/backend/:secret', (req, res) => {
-    if (req.params.secret === process.env.GITPUSH_SECRET) {
+    if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
+        updateScreen('webhook', 'messages', chalk.green('BACKEND PUSH VALID'));
         doBackend();
-        updateScreen('webhook', 'messages', chalk.green('BACKEND PUSH PASSED'));
     }else{
-        updateScreen('webhook', 'messages', chalk.red('BACKEND PUSH BADSECRET'));
+        updateScreen('webhook', 'messages', chalk.red('BACKEND PUSH INVALID'));
     }
     res.sendStatus(200);
 })
 app.post('/frontend/:secret', (req, res) => {
-    if (req.params.secret === process.env.GITPUSH_SECRET) {
+    if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
         doFrontend();
         updateScreen('webhook', 'messages', chalk.green('FRONTEND PUSH PASSED'));
     }else{
-        updateScreen('webhook', 'messages', chalk.red('FRONTEND PUSH BADSECRET'));
+        updateScreen('webhook', 'messages', chalk.red('FRONTEND PUSH INVALID'));
     }
     res.sendStatus(200);
 })

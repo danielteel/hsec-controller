@@ -88,7 +88,7 @@ function doFrontend(){
 
     download('https://github.com/danielteel/hsec/tree/main/build', './front', {requests: 1, muteLog: true}).then( (stats) => {
         try {
-            cpSync('./front/', '/mnt/ramdisk/static/');
+            cpSync('./front/', '/mnt/ramdisk/static/', {recursive: true});
         }catch (e){
             console.log(e);
             process.exit(-1);

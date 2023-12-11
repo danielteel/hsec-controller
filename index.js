@@ -48,7 +48,7 @@ function updateScreen(which, key, val){
     console.log(status.back.running?chalk.green('X'):chalk.yellow('.'),chalk.white('RUNNING'));
     console.log(chalk.yellow('MESSAGES'));
     for (let m of status.back.messages){
-        console.log('\t', m);
+        console.log('\t', m.trim());
     }
 }
 

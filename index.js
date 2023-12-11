@@ -107,15 +107,6 @@ function doFrontend() {
     updateScreen('front', 'downloaded', false);
 
     try {
-        mkdirSync('./front');
-    } catch (e) {
-        if (e.code !== 'EEXIST') {
-            console.log(e);
-            process.exit(-1);
-        }
-    }
-
-    try {
         rmSync('/mnt/ramdisk/static', { recursive: true, force: true });
     } catch (e) {
         console.log(e);
@@ -131,22 +122,14 @@ function doFrontend() {
         }
     }
 
-
     updateScreen('front', 'dir', true);
 
-    download('https://github.com/danielteel/hsec/tree/main/build', './front', { requests: 1, muteLog: true }).then((stats) => {
-        try {
-            cpSync('./front/', '/mnt/ramdisk/static/', { recursive: true });
-        } catch (e) {
-            console.log(e);
-            process.exit(-1);
-        }
+    download('https://github.com/danielteel/hsec/tree/main/build', '/mnt/ramdisk/static', { requests: 1, muteLog: true }).then((stats) => {
         updateScreen('front', 'downloaded', true);
     }).catch(e => {
         console.log(e);
         process.exit(-1);
     })
-
 }
 
 

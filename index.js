@@ -68,11 +68,11 @@ function doFrontend(){
     }
 
     try {
-        rmSync('/mnt/ramdisk/front', { recursive: true, force: true });
+        rmSync('/mnt/ramdisk/static', { recursive: true, force: true });
     }catch (e){}
 
     try {
-        mkdirSync('/mnt/ramdisk/front');
+        mkdirSync('/mnt/ramdisk/static');
     }catch (e){
         if (e.code!=='EEXIST'){
             console.log(e);
@@ -85,7 +85,7 @@ function doFrontend(){
 
     download('https://github.com/danielteel/hsec/tree/main/build', './front', {requests: 1, muteLog: true}).then( (stats) => {
         try {
-            cpSync('./front', '/mnt/ramdisk/front');
+            cpSync('./front', '/mnt/ramdisk/static');
         }catch (e){}
         updateScreen('front', 'downloaded', true);
     }).catch(e=>{

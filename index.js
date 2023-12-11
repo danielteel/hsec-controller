@@ -42,8 +42,8 @@ app.post('/backend/:secret', (req, res) => {
 })
 app.post('/frontend/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
-        doFrontend();
         updateScreen('webhook', 'messages', chalk.green('FRONTEND PUSH PASSED'));
+        doFrontend();
     }else{
         updateScreen('webhook', 'messages', chalk.red('FRONTEND PUSH INVALID'));
     }

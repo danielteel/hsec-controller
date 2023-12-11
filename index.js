@@ -147,7 +147,6 @@ function doBackend() {
 
     if (backendProcess) {
         backendProcess.kill();
-
     }
     try {
         mkdirSync('./back');

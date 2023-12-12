@@ -148,7 +148,7 @@ function doBackend() {
     updateScreen('back', 'downloaded', false);
 
     if (backendProcess) {
-        backendProcess.kill();
+        backendProcess.kill('');
     }
     try {
         mkdirSync('./back');
@@ -173,7 +173,7 @@ function doBackend() {
     } catch { }
     updateScreen('back', 'installed', true);
 
-    backendProcess = exec('node index', { cwd: path.join(__dirname, 'back', 'hsec-api'), env: { ...process.env } });
+    backendProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'back', 'hsec-api'), env: { ...process.env } });
 
     updateScreen('back', 'running', true);
 

@@ -1,5 +1,8 @@
 {
+    "ignore": [
+        "back/"
+    ],
     "events": {
-      "restart": "npm install"
+        "restart": "npm install"
     }
-  }
+}

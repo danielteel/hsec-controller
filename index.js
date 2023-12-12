@@ -175,10 +175,8 @@ function doBackend() {
 
     backendProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'back', 'hsec-api'), env: { ...process.env } });
 
-    updateScreen('back', 'running', true);
-
     backendProcess.on('exit', (code) => {
-        updateScreen('back', 'running', false);
+        updateScreen('back', 'running', --status.back.running);
     });
     backendProcess.stderr.on('data', (d) => {
         updateScreen('back', 'messages', d);
@@ -186,6 +184,10 @@ function doBackend() {
     backendProcess.stdout.on('data', (d) => {
         updateScreen('back', 'messages', d);
     });
+    
+    setTimeout(()=>{
+        updateScreen('back', 'running', ++status.back.running);
+    },250);
 }
 
 function doCamProcess(){

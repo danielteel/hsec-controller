@@ -41,6 +41,16 @@ doFrontend();
 doBackend();
 
 
+
+app.post('/controller/:secret', (req, res) => {
+    if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
+        updateScreen('webhook', 'messages', chalk.green('CONTROLLER PUSH VALID'));
+        execSync('git pull');//Nodemon should restart this program after the pull
+    }else{
+        updateScreen('webhook', 'messages', chalk.red('CONTROLLER PUSH INVALID'));
+    }
+    res.sendStatus(200);
+})
 app.post('/backend/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
         updateScreen('webhook', 'messages', chalk.green('BACKEND PUSH VALID'));
@@ -192,13 +202,13 @@ function doCamProcess(){
     const args = [
         '-i', '/dev/video0',
         '-s', '960x540',
-        '-r', '4',
-        '-g', '5',
+        '-r', '3',
+        '-g', '4',
         '-c:v', 'libx264',
-        '-crf', '28',
+        '-crf', '24',
         '-preset', 'veryfast',
         '-tune', 'zerolatency',
-        '-hls_time', '1.25',
+        '-hls_time', '1.333',
         '-hls_list_size', '3',
         '-hls_flags', 'delete_segments',
         '/mnt/ramdisk/cam/allcamL.m3u8',

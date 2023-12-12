@@ -41,7 +41,6 @@ doFrontend();
 doBackend();
 
 
-
 app.post('/controller/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
         updateScreen('webhook', 'messages', chalk.green('CONTROLLER PUSH VALID'));

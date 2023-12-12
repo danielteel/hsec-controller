@@ -148,7 +148,7 @@ function doBackend() {
     updateScreen('back', 'downloaded', false);
 
     if (backendProcess) {
-        backendProcess.kill('SIGKILL');
+        backendProcess.kill('SIGKILL');//should i use a different signal?
     }
     try {
         mkdirSync('./back');

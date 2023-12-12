@@ -7,6 +7,6 @@
     "nodemon": "^3.0.2"
   },
   "scripts": {
-    "start": "nodemon --delay 2 --exec \"npm install && node index.js\""
+    "start": "nodemon --delay 2 --exec --ignore back/ \"npm install && node index.js\""
   }
 }

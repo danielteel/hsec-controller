@@ -1,5 +1,6 @@
 {
     "ignore": [
-        "back/"
+        "back/",
+        "node_modules/"
     ]
 }

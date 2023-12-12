@@ -148,7 +148,7 @@ function doBackend() {
     updateScreen('back', 'downloaded', false);
 
     if (backendProcess) {
-        backendProcess.kill('');
+        backendProcess.kill('SIGKILL');
     }
     try {
         mkdirSync('./back');

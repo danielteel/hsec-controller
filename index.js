@@ -81,7 +81,7 @@ function updateScreen(which, key, val) {
     } else {
         status[which][key] = val;
     }
-    console.clear();
+    //console.clear();
     console.log(chalk.yellow('HSEC-CONTROLLER'));
     console.log();
     console.log(chalk.cyan('FFMPEG'));

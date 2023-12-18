@@ -213,6 +213,10 @@ function doCamProcess(){
         '-hls_list_size', '3',
         '-hls_flags', 'delete_segments',
         '/mnt/ramdisk/cam/allcamL.m3u8',
+
+        '-s', '1920x1080',
+        '-r', '0.25',
+        '/mnt/ramdisk/cam/still.jpg'
     ]
     const child = spawn('ffmpeg', args);
 

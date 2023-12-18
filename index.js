@@ -216,7 +216,7 @@ function doCamProcess(){
 
         '-s', '1920x1080',
         '-r', '0.25',
-        '/mnt/ramdisk/cam/still.jpg'
+        '-y', '/mnt/ramdisk/cam/still.jpg'
     ]
     const child = spawn('ffmpeg', args);
 

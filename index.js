@@ -203,13 +203,13 @@ function doCamProcess(){
     const args = [
         '-i', '/dev/video0',
         '-s', '960x540',
-        '-r', '4',
-        '-g', '5',
+        '-r', '5',
+        '-g', '7',
         '-c:v', 'libx264',
         '-crf', '24',
         '-preset', 'veryfast',
         '-tune', 'zerolatency',
-        '-hls_time', '1.25',
+        '-hls_time', '1.4',
         '-hls_list_size', '3',
         '-hls_flags', 'delete_segments',
         '/mnt/ramdisk/cam/allcamL.m3u8'

@@ -184,16 +184,16 @@ function doFFMPEG() {
         execSync('git clone https://github.com/danielteel/hsec-ffmpeg', { cwd: path.join(__dirname, 'ffmpeg') });
     } catch { }
     try {
-        execSync('git pull', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-api') });
+        execSync('git pull', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg') });
     } catch { }
 
     updateScreen('ffmpeg', 'downloaded', true);
     try {
-        execSync('npm install', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-api') });
+        execSync('npm install', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg') });
     } catch { }
     updateScreen('ffmpeg', 'installed', true);
 
-    ffmpegProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'ffmpeg', 'hsec-api'), env: { ...process.env } });
+    ffmpegProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg'), env: { ...process.env } });
 
     ffmpegProcess.on('exit', (code) => {
         updateScreen('ffmpeg', 'running', --status.ffmpeg.running);

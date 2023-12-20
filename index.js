@@ -193,8 +193,7 @@ function doFFMPEG() {
     } catch { }
     updateScreen('ffmpeg', 'installed', true);
 
-    //ffmpegProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg'), env: { ...process.env } });
-    ffmpegProcess = exec('node index',  { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg'), env: { ...process.env } });
+    ffmpegProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg'), env: { ...process.env } });
     ffmpegProcess.on('exit', (code) => {
         updateScreen('ffmpeg', 'running', --status.ffmpeg.running);
     });

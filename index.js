@@ -211,7 +211,6 @@ function doCamProcess(){
         return [
             '-s', String(w)+'x'+String(h),
             '-r', String(fps),
-            '-c:v', 'libx264',
             '-crf', String(qual),
             '-preset', 'veryfast',
             '-tune', 'zerolatency',
@@ -232,7 +231,6 @@ function doCamProcess(){
     
     const formats = [
         {file: 'still.jpg', title:'Mobile', w: 640, h:360, qual: 21, fps: 0.5},
-        {file: 'pqll.m3u8', title:'Low',  w: 320,  h: 180, qual: 21, fps: 4, block: 1.5},//19 kbps
         {file: 'hqll.m3u8', title:'Med', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//50 kbps
         {file: 'best.m3u8', title:'High', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//188 kbps
     ];

@@ -217,18 +217,8 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     const args = [
         '-i', '/dev/video0',
-        '-s', '960x540',
-        '-r', '5',
-        '-g', '5',
-        '-c:v', 'libx264',
-        '-crf', '24',
-        '-preset', 'veryfast',
-        '-tune', 'zerolatency',
-        '-hls_time', '1',
-        '-hls_list_size', '3',
-        '-hls_flags', 'delete_segments',
-        '/mnt/ramdisk/cam/allcamLL.m3u8',
-        ...buildArgs(960, 540, 24, 4, 5, 'allcamHL')
+        ...buildArgs(960, 540, 24, 4, 1, 'allcamLL'),
+        ...buildArgs(480, 270, 24, 4, 5, 'allcamHL')
     ]
     const child = spawn('ffmpeg', args);
 

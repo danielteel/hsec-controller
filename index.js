@@ -197,7 +197,7 @@ function doCamProcess(){
         '-r', String(fps),
         '-g', String(fps*blockSeconds),
         '-c:v', 'libx264',
-        '-crf', Sting(qual),
+        '-crf', String(qual),
         '-preset', 'veryfast',
         '-tune', 'zerolatency',
         '-hls_time', String(blockSeconds),

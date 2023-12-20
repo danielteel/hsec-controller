@@ -218,9 +218,9 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     
     const formats = [
-        {file: 'pqll.m3u8', title:'Low',  w: 320,  h: 180, qual: 21, fps: 4, block: 1.5},//13 kbps
-        {file: 'hqll.m3u8', title:'Med', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//37 kbps
-        {file: 'best.m3u8', title:'High', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//165 kbps
+        {file: 'pqll.m3u8', title:'Low',  w: 320,  h: 180, qual: 21, fps: 4, block: 1.5},//19 kbps
+        {file: 'hqll.m3u8', title:'Med', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//50 kbps
+        {file: 'best.m3u8', title:'High', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//188 kbps
     ];
     writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
 
@@ -230,7 +230,11 @@ function doCamProcess(){
     }
     const args = [
         '-i', '/dev/video0',
-        ...outputArgs
+        ...outputArgs,
+        '-s', '640x360',
+        '-crf','27',
+        '-y',
+        '/mnt/ramdisk/cam/still.jpg'
     ]
     const child = spawn('ffmpeg', args);
 

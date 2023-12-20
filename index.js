@@ -67,7 +67,7 @@ app.post('/backend/:secret', (req, res) => {
 app.post('/ffmpeg/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
         updateScreen('webhook', 'messages', chalk.green('FFMPEG PUSH VALID'));
-        doBackend();
+        doFFMPEG();
     }else{
         updateScreen('webhook', 'messages', chalk.red('FFMPEG PUSH INVALID'));
     }

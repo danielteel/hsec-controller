@@ -231,7 +231,7 @@ function doCamProcess(){
     const args = [
         '-i', '/dev/video0',
         ...outputArgs,
-        '-s', '1280x720',
+        '-s', '640x360',
         '-crf','21',
         '-r','1',
         '-y','-update','1',

@@ -203,7 +203,7 @@ function doCamProcess(){
             '-hls_time', String(blockSeconds),
             '-hls_list_size', '3',
             '-hls_flags', 'delete_segments',
-            '/mnt/ramdisk/cam/'+fileName+'.m3u8'
+            '/mnt/ramdisk/cam/'+fileName
         ]
     }
     try {
@@ -217,8 +217,8 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     
     const formats = [
-        {file: 'allcamH', w: 1280, h: 720, qual: 23, fps: 4, block: 2},
-        {file: 'allcamL', w: 640, h: 360, qual: 23, fps: 4, block: 5},
+        {file: 'allcamH.m3u8', w: 1280, h: 720, qual: 23, fps: 4, block: 2},
+        {file: 'allcamL.m3u8', w: 640, h: 360, qual: 23, fps: 4, block: 5},
     ];
     writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
 

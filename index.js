@@ -41,8 +41,8 @@ let status = {
 };
 
 
-doCamProcess();
 doFrontend();
+doFFMPEG();
 doBackend();
 
 

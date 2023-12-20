@@ -10,12 +10,9 @@ const port = 4002;
 require('dotenv').config({ path: 'env.env' });
 
 let backendProcess = null;
+let ffmpegProcess=null;
 
 let status = {
-    ffmpeg:{
-        dir: false,
-        active: false
-    },
     webhook: {
         active: false,
         messages: [],
@@ -25,13 +22,21 @@ let status = {
         dir: false,
         downloaded: false
     },
+    ffmpeg:{
+        dir: false,
+        downloaded: false,
+        installed: false,
+        messages: [],
+        running: false,
+        maxMessages: 6
+    },
     back: {
         dir: false,
         downloaded: false,
         installed: false,
         messages: [],
         running: false,
-        maxMessages: 10
+        maxMessages: 6
     }
 };
 
@@ -56,6 +61,15 @@ app.post('/backend/:secret', (req, res) => {
         doBackend();
     }else{
         updateScreen('webhook', 'messages', chalk.red('BACKEND PUSH INVALID'));
+    }
+    res.sendStatus(200);
+})
+app.post('/ffmpeg/:secret', (req, res) => {
+    if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
+        updateScreen('webhook', 'messages', chalk.green('FFMPEG PUSH VALID'));
+        doBackend();
+    }else{
+        updateScreen('webhook', 'messages', chalk.red('FFMPEG PUSH INVALID'));
     }
     res.sendStatus(200);
 })
@@ -84,30 +98,36 @@ function updateScreen(which, key, val) {
     console.clear();
     console.log(chalk.yellow('HSEC-CONTROLLER'));
     console.log();
-    console.log(chalk.cyan('FFMPEG'));
-    console.log(status.ffmpeg.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
-    console.log(status.ffmpeg.active ? chalk.green('X') : chalk.yellow('.'), chalk.white('ACTIVE'));
-    console.log();
     console.log(chalk.cyan('WEBHOOK'));
-    console.log(status.webhook.active ? chalk.green('X') : chalk.yellow('.'), chalk.white('ACTIVE'));
-    console.log(chalk.yellow('MESSAGES'));
+    console.log('\t', status.webhook.active ? chalk.green('X') : chalk.yellow('.'), chalk.white('ACTIVE'));
+    console.log('\t', chalk.yellow('MESSAGES'));
     for (let m of status.webhook.messages) {
-        console.log('\t', String(m).trim());
+        console.log('\t\t', String(m).trim());
     }
     console.log();
     console.log(chalk.cyan('FRONT'));
-    console.log(status.front.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
-    console.log(status.front.downloaded ? chalk.green('X') : chalk.yellow('.'), chalk.white('DOWNLOADED'));
+    console.log('\t', status.front.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
+    console.log('\t', status.front.downloaded ? chalk.green('X') : chalk.yellow('.'), chalk.white('DOWNLOADED'));
     console.log();
 
+    console.log(chalk.cyan('FFMPEG'));
+    console.log('\t',status.ffmpeg.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
+    console.log('\t',status.ffmpeg.downloaded ? chalk.green('X') : chalk.yellow('.'), chalk.white('DOWNLOADED'));
+    console.log('\t',status.ffmpeg.installed ? chalk.green('X') : chalk.yellow('.'), chalk.white('INSTALLED'));
+    console.log('\t',status.ffmpeg.running ? chalk.green('X') : chalk.yellow('.'), chalk.white('RUNNING'));
+    console.log('\t',chalk.yellow('MESSAGES'));
+    for (let m of status.ffmpeg.messages) {
+        console.log('\t\t', String(m).trim());
+    }
+
     console.log(chalk.cyan('BACK'));
-    console.log(status.back.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
-    console.log(status.back.downloaded ? chalk.green('X') : chalk.yellow('.'), chalk.white('DOWNLOADED'));
-    console.log(status.back.installed ? chalk.green('X') : chalk.yellow('.'), chalk.white('INSTALLED'));
-    console.log(status.back.running ? chalk.green('X') : chalk.yellow('.'), chalk.white('RUNNING'));
-    console.log(chalk.yellow('MESSAGES'));
+    console.log('\t', status.back.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
+    console.log('\t', status.back.downloaded ? chalk.green('X') : chalk.yellow('.'), chalk.white('DOWNLOADED'));
+    console.log('\t', status.back.installed ? chalk.green('X') : chalk.yellow('.'), chalk.white('INSTALLED'));
+    console.log('\t', status.back.running ? chalk.green('X') : chalk.yellow('.'), chalk.white('RUNNING'));
+    console.log('\t', chalk.yellow('MESSAGES'));
     for (let m of status.back.messages) {
-        console.log('\t', String(m).trim());
+        console.log('\t\t', String(m).trim());
     }
 }
 
@@ -139,6 +159,55 @@ function doFrontend() {
         console.log(e);
         process.exit(-1);
     })
+}
+
+
+//Get ffmpeg
+function doFFMPEG() {
+    status.ffmpeg.installed = false;
+    updateScreen('ffmpeg', 'downloaded', false);
+
+    if (ffmpegProcess) {
+        ffmpegProcess.kill('SIGKILL');//should i use a different signal?
+    }
+    try {
+        mkdirSync('./ffmpeg');
+    } catch (e) {
+        if (e.code !== 'EEXIST') {
+            console.log(e);
+            process.exit(-1);
+        }
+    }
+
+    updateScreen('ffmpeg', 'dir', true);
+    try {
+        execSync('git clone https://github.com/danielteel/hsec-ffmpeg', { cwd: path.join(__dirname, 'ffmpeg') });
+    } catch { }
+    try {
+        execSync('git pull', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-api') });
+    } catch { }
+
+    updateScreen('ffmpeg', 'downloaded', true);
+    try {
+        execSync('npm install', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-api') });
+    } catch { }
+    updateScreen('ffmpeg', 'installed', true);
+
+    ffmpegProcess = spawn('node', ['index'], { cwd: path.join(__dirname, 'ffmpeg', 'hsec-api'), env: { ...process.env } });
+
+    ffmpegProcess.on('exit', (code) => {
+        updateScreen('ffmpeg', 'running', --status.ffmpeg.running);
+    });
+    ffmpegProcess.stderr.on('data', (d) => {
+        updateScreen('ffmpeg', 'messages', d);
+    });
+    ffmpegProcess.stdout.on('data', (d) => {
+        updateScreen('ffmpeg', 'messages', d);
+    });
+    
+    setTimeout(()=>{
+        updateScreen('ffmpeg', 'running', ++status.ffmpeg.running);
+    },250);
 }
 
 
@@ -188,74 +257,4 @@ function doBackend() {
     setTimeout(()=>{
         updateScreen('back', 'running', ++status.back.running);
     },250);
-}
-
-function doCamProcess(){
-    function buildArgs(w, h, qual, fps, blockSeconds, fileName){
-        return [
-            '-s', String(w)+'x'+String(h),
-            '-vf', 'format=yuv420p',
-            '-r', String(fps),
-            '-g', String(fps*blockSeconds),
-            '-c:v', 'libx264',
-            '-crf', String(qual),
-            '-preset', 'veryfast',
-            '-tune', 'zerolatency',
-            '-hls_time', String(blockSeconds),
-            '-hls_list_size', '2',
-            '-hls_flags', 'delete_segments',
-            '/mnt/ramdisk/cam/'+fileName
-        ]
-    }
-    function buildArgsJpg(w, h, qual, fps, fileName){
-        return [
-            '-s', String(w)+'x'+String(h),
-            '-r', String(fps),
-            '-qscale', String(qual),
-            '-preset', 'veryfast',
-            '-tune', 'zerolatency',
-            '-y',
-            '-update', '1',
-            '/mnt/ramdisk/cam/'+fileName
-        ]
-    }
-    try {
-        mkdirSync('/mnt/ramdisk/cam');
-    }catch (e){        
-        if (e.code !== 'EEXIST') {
-            console.log(e);
-            process.exit(-1);
-        }
-    }
-    updateScreen('ffmpeg','dir', true);
-    
-    const formats = [
-        {file: 'il.jpg', title:'I-Lo', w: 640, h:360, qual: 13, fps: 0.66},
-        {file: 'ih.jpg', title:'I-Hi', w: 1280, h:720, qual: 13, fps: 0.66},
-        {file: 'hqll.m3u8', title:'V-Lo', w: 640, h: 360, qual: 24, fps: 4, block: 2},//50 kbps
-        {file: 'best.m3u8', title:'V-Hi', w: 1280, h: 720, qual: 24, fps: 4, block: 2},//188 kbps
-    ];
-    writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
-
-    let outputArgs=[];
-    for (const format of formats){
-        if (format.block){
-            outputArgs=[...outputArgs, ...buildArgs(format.w, format.h, format.qual, format.fps, format.block, format.file)];
-        }else{
-            outputArgs=[...outputArgs, ...buildArgsJpg(format.w, format.h, format.qual, format.fps, format.file)];
-        }
-    }
-    const args = [
-        '-i', '/dev/video0',
-        ...outputArgs,
-    ]
-    const child = spawn('ffmpeg', args);
-
-    updateScreen('ffmpeg','active', true);
-    
-    child.on('exit', (code) => {
-        updateScreen('ffmpeg','active', false);
-    });
-    child.stderr.on('data', (data) => null);
-    child.stdout.on('data', (data) => null);
 }

@@ -218,11 +218,9 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     
     const formats = [
-        {file: 'pqhl.m3u8', title:'PQ-HL',  w: 640,  h: 360, qual: 23, fps: 4, block: 5},//~22 kbps
-        {file: 'pqll.m3u8', title:'PQ-LL', w: 640,  h: 360, qual: 23, fps: 4, block: 2},//37 kbps
-        {file: 'hqhl.m3u8', title:'HQ-HL',  w: 1280, h: 720, qual: 23, fps: 4, block: 5},//200 kbps
-        {file: 'hqll.m3u8', title:'HQ-LL', w: 1280, h: 720, qual: 23, fps: 4, block: 2},//225 kbps
-        {file: 'best.m3u8', title:'BEST', w: 1280, h: 720, qual: 21, fps: 5, block: 2},//350 kbps
+        {file: 'pqll.m3u8', title:'Low', w: 640,  h: 360, qual: 23, fps: 4, block: 2},//37 kbps
+        {file: 'hqll.m3u8', title:'High', w: 1280, h: 720, qual: 23, fps: 4, block: 2},//225 kbps
+        {file: 'best.m3u8', title:'Best', w: 1280, h: 720, qual: 21, fps: 5, block: 2},//350 kbps
     ];
     writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
 

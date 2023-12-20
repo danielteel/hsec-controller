@@ -1,8 +1,8 @@
 
-const { exec, execSync, spawn } = require('node:child_process');
+const { execSync, spawn } = require('node:child_process');
 const process = require('node:process');
 const download = require('github-directory-downloader');
-const { mkdirSync, cpSync, rmSync } = require('node:fs');
+const { mkdirSync, rmSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
 const app = require('express')();
@@ -193,17 +193,17 @@ function doBackend() {
 function doCamProcess(){
     function buildArgs(w, h, qual, fps, blockSeconds, fileName){
         return [
-        '-s', String(w)+'x'+String(h),
-        '-r', String(fps),
-        '-g', String(fps*blockSeconds),
-        '-c:v', 'libx264',
-        '-crf', String(qual),
-        '-preset', 'veryfast',
-        '-tune', 'zerolatency',
-        '-hls_time', String(blockSeconds),
-        '-hls_list_size', '3',
-        '-hls_flags', 'delete_segments',
-        '/mnt/ramdisk/cam/'+fileName+'.m3u8'
+            '-s', String(w)+'x'+String(h),
+            '-r', String(fps),
+            '-g', String(fps*blockSeconds),
+            '-c:v', 'libx264',
+            '-crf', String(qual),
+            '-preset', 'veryfast',
+            '-tune', 'zerolatency',
+            '-hls_time', String(blockSeconds),
+            '-hls_list_size', '3',
+            '-hls_flags', 'delete_segments',
+            '/mnt/ramdisk/cam/'+fileName+'.m3u8'
         ]
     }
     try {
@@ -215,10 +215,20 @@ function doCamProcess(){
         }
     }
     updateScreen('ffmpeg','dir', true);
+    
+    const formats = [
+        {file: 'allcamH', w: 1280, h: 720, qual: 23, fps: 4, block: 2},
+        {file: 'allcamL', w: 640, h: 360, qual: 23, fps: 4, block: 5},
+    ];
+    writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
+
+    let outputArgs=[];
+    for (const format of formats){
+        outputArgs=[...outputArgs, ...buildArgs(format.w, format.h, format.qual, format.fps, format.block, format.file)]
+    }
     const args = [
         '-i', '/dev/video0',
-        ...buildArgs(960, 540, 24, 4, 1, 'allcamLL'),
-        ...buildArgs(480, 270, 24, 4, 5, 'allcamHL')
+        ...outputArgs
     ]
     const child = spawn('ffmpeg', args);
 

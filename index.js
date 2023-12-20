@@ -191,6 +191,21 @@ function doBackend() {
 }
 
 function doCamProcess(){
+    function buildArgs(w, h, qual, fps, blockSeconds, fileName){
+        return [
+        '-s', String(w)+'x'+String(h),
+        '-r', String(fps),
+        '-g', String(fps*blockSeconds),
+        '-c:v', 'libx264',
+        '-crf', Sting(qual),
+        '-preset', 'veryfast',
+        '-tune', 'zerolatency',
+        '-hls_time', String(blockSeconds),
+        '-hls_list_size', '3',
+        '-hls_flags', 'delete_segments',
+        '/mnt/ramdisk/cam/'+fileName+'.m3u8'
+        ]
+    }
     try {
         mkdirSync('/mnt/ramdisk/cam');
     }catch (e){        
@@ -213,17 +228,7 @@ function doCamProcess(){
         '-hls_list_size', '3',
         '-hls_flags', 'delete_segments',
         '/mnt/ramdisk/cam/allcamLL.m3u8',
-        '-s', '960x540',
-        '-r', '4',
-        '-g', '12',
-        '-c:v', 'libx264',
-        '-crf', '25',
-        '-preset', 'veryfast',
-        '-tune', 'zerolatency',
-        '-hls_time', '3',
-        '-hls_list_size', '3',
-        '-hls_flags', 'delete_segments',
-        '/mnt/ramdisk/cam/allcamHL.m3u8'
+        ...buildArgs(960, 540, 24, 4, 5, 'allcamHL')
     ]
     const child = spawn('ffmpeg', args);
 

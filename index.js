@@ -211,7 +211,7 @@ function doCamProcess(){
         return [
             '-s', String(w)+'x'+String(h),
             '-r', String(fps),
-            '-crf', String(qual),
+            '-qscale', String(qual),
             '-preset', 'veryfast',
             '-tune', 'zerolatency',
             '-y',
@@ -230,9 +230,10 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     
     const formats = [
-        {file: 'still.jpg', title:'Mobile', w: 640, h:360, qual: 21, fps: 0.5},
-        {file: 'hqll.m3u8', title:'Med', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//50 kbps
-        {file: 'best.m3u8', title:'High', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//188 kbps
+        {file: 'still.jpg', title:'Img-Low', w: 640, h:360, qual: 15, fps: 0.5},
+        {file: 'still.jpg', title:'Img-High', w: 640, h:360, qual: 6, fps: 0.5},
+        {file: 'hqll.m3u8', title:'Vid-Low', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//50 kbps
+        {file: 'best.m3u8', title:'Vid-High', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//188 kbps
     ];
     writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
 

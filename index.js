@@ -230,10 +230,10 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     
     const formats = [
-        {file: 'il.jpg', title:'Img-Low', w: 640, h:360, qual: 13, fps: 0.5},
-        {file: 'ih.jpg', title:'Img-High', w: 1280, h:720, qual: 13, fps: 0.5},
-        {file: 'hqll.m3u8', title:'Vid-Low', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//50 kbps
-        {file: 'best.m3u8', title:'Vid-High', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//188 kbps
+        {file: 'il.jpg', title:'I-Lo', w: 640, h:360, qual: 12, fps: 1},
+        {file: 'ih.jpg', title:'I-Hi', w: 1280, h:720, qual: 12, fps: 1},
+        {file: 'hqll.m3u8', title:'V-Lo', w: 640, h: 360, qual: 23, fps: 4, block: 1.5},//50 kbps
+        {file: 'best.m3u8', title:'V-Hi', w: 1280, h: 720, qual: 25, fps: 4, block: 1.5},//188 kbps
     ];
     writeFileSync('/mnt/ramdisk/cam/details.json', JSON.stringify(formats));
 

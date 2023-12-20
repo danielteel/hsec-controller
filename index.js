@@ -218,7 +218,7 @@ function doCamProcess(){
     updateScreen('ffmpeg','dir', true);
     
     const formats = [
-        {file: 'pqll.m3u8', title:'Low',  w: 320,  h: 90, qual: 23, fps: 4, block: 2},//37 kbps
+        {file: 'pqll.m3u8', title:'Low',  w: 320,  h: 180, qual: 23, fps: 4, block: 2},//37 kbps
         {file: 'hqll.m3u8', title:'High', w: 1280, h: 720, qual: 23, fps: 4, block: 2},//225 kbps
         {file: 'best.m3u8', title:'Best', w: 1280, h: 720, qual: 23, fps: 4, block: 2},//350 kbps
     ];

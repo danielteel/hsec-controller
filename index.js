@@ -232,7 +232,7 @@ function doCamProcess(){
         '-i', '/dev/video0',
         ...outputArgs,
         '-s', '640x360',
-        '-crf','21',
+        '-crf','21',s
         '-r','1',
         '-y','-update','1',
         '/mnt/ramdisk/cam/still.jpg'

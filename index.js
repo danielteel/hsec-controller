@@ -233,7 +233,8 @@ function doCamProcess(){
         ...outputArgs,
         '-s', '640x360',
         '-crf','27',
-        '-y','-update',
+        '-r','1',
+        '-y','-update','1',
         '/mnt/ramdisk/cam/still.jpg'
     ]
     const child = spawn('ffmpeg', args);

@@ -168,7 +168,7 @@ function doFFMPEG() {
     updateScreen('ffmpeg', 'downloaded', false);
 
     if (ffmpegProcess) {
-        ffmpegProcess.kill('SIGKILL');//should i use a different signal?
+        ffmpegProcess.kill('SIGTERM');//should i use a different signal?
     }
     try {
         mkdirSync('./ffmpeg');
@@ -217,7 +217,7 @@ function doBackend() {
     updateScreen('back', 'downloaded', false);
 
     if (backendProcess) {
-        backendProcess.kill('SIGKILL');//should i use a different signal?
+        backendProcess.kill('SIGTERM');//should i use a different signal?
     }
     try {
         mkdirSync('./back');

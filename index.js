@@ -56,28 +56,28 @@ app.post('/controller/:secret', (req, res) => {
 })
 app.post('/backend/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
-        updateScreen('webhook', 'messages', 'BACKEND PUSH VALID');
+        updateScreen('webhook', 'messages', chalk.green('BACKEND PUSH VALID'));
         doBackend();
     }else{
-        updateScreen('webhook', 'messages', 'BACKEND PUSH INVALID');
+        updateScreen('webhook', 'messages', chalk.red('BACKEND PUSH INVALID'));
     }
     res.sendStatus(200);
 })
 app.post('/ffmpeg/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
-        updateScreen('webhook', 'messages', 'FFMPEG PUSH VALID');
+        updateScreen('webhook', 'messages', chalk.green('FFMPEG PUSH VALID'));
         doFFMPEG();
     }else{
-        updateScreen('webhook', 'messages', 'FFMPEG PUSH INVALID');
+        updateScreen('webhook', 'messages', chalk.red('FFMPEG PUSH INVALID'));
     }
     res.sendStatus(200);
 })
 app.post('/frontend/:secret', (req, res) => {
     if (req.params.secret && req.params.secret === process.env.GITPUSH_SECRET) {
-        updateScreen('webhook', 'messages', 'FRONTEND PUSH PASSED');
+        updateScreen('webhook', 'messages', chalk.green('FRONTEND PUSH PASSED'));
         doFrontend();
     }else{
-        updateScreen('webhook', 'messages', 'FRONTEND PUSH INVALID');
+        updateScreen('webhook', 'messages', chalk.red('FRONTEND PUSH INVALID'));
     }
     res.sendStatus(200);
 })
@@ -86,7 +86,7 @@ app.listen(process.env.GITPUSH_PORT, () => {
 })
 
 function stripNoRender(str){
-    return str.split('').filter(c => c.charCodeAt(0)>=32).join('');
+    return str.split('').filter(c => c.charCodeAt(0)!==13 && c.charCodeAt(0)!==10).join('');
 }
 
 function updateScreen(which, key, val) {

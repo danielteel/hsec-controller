@@ -6,7 +6,6 @@ const { mkdirSync, rmSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
 const app = require('express')();
-const port = 4002;
 require('dotenv').config({ path: 'env.env' });
 
 let backendProcess = null;
@@ -82,7 +81,7 @@ app.post('/frontend/:secret', (req, res) => {
     }
     res.sendStatus(200);
 })
-app.listen(port, () => {
+app.listen(process.env.GITPUSH_PORT, () => {
     updateScreen('webhook', 'active', true);
 })
 

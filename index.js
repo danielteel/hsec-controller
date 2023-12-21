@@ -153,7 +153,7 @@ function doFrontend() {
 
     updateScreen('front', 'dir', true);
 
-    download('https://github.com/danielteel/hsec/tree/main/build', '/mnt/ramdisk/static', { requests: 1, muteLog: true }).then((stats) => {
+    download('https://github.com/danielteel/hsec/tree/main/build', '/mnt/ramdisk/static', { requests: 3, muteLog: true }).then((stats) => {
         updateScreen('front', 'downloaded', true);
     }).catch(e => {
         console.log(e);
@@ -181,15 +181,15 @@ function doFFMPEG() {
 
     updateScreen('ffmpeg', 'dir', true);
     try {
-        execSync('git clone https://github.com/danielteel/hsec-ffmpeg', { cwd: path.join(__dirname, 'ffmpeg') });
+        execSync('git clone https://github.com/danielteel/hsec-ffmpeg', { cwd: path.join(__dirname, 'ffmpeg'), stdio:'pipe' });
     } catch { }
     try {
-        execSync('git pull', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg') });
+        execSync('git pull', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg'), stdio:'pipe' });
     } catch { }
 
     updateScreen('ffmpeg', 'downloaded', true);
     try {
-        execSync('npm install', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg') });
+        execSync('npm install', { cwd: path.join(__dirname, 'ffmpeg', 'hsec-ffmpeg'), stdio:'pipe' });
     } catch { }
     updateScreen('ffmpeg', 'installed', true);
 
@@ -229,15 +229,15 @@ function doBackend() {
 
     updateScreen('back', 'dir', true);
     try {
-        execSync('git clone https://github.com/danielteel/hsec-api', { cwd: path.join(__dirname, 'back') });
+        execSync('git clone https://github.com/danielteel/hsec-api', { cwd: path.join(__dirname, 'back'), stdio:'pipe' });
     } catch { }
     try {
-        execSync('git pull', { cwd: path.join(__dirname, 'back', 'hsec-api') });
+        execSync('git pull', { cwd: path.join(__dirname, 'back', 'hsec-api'), stdio:'pipe' });
     } catch { }
 
     updateScreen('back', 'downloaded', true);
     try {
-        execSync('npm install', { cwd: path.join(__dirname, 'back', 'hsec-api') });
+        execSync('npm install', { cwd: path.join(__dirname, 'back', 'hsec-api'), stdio:'pipe' });
     } catch { }
     updateScreen('back', 'installed', true);
 

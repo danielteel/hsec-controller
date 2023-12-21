@@ -125,7 +125,7 @@ function updateScreen(which, key, val) {
     for (let m of status.ffmpeg.messages) {
         console.log('\t\t', String(m).trim());
     }
-    for (let i=0;i<status.ffmpeg.maxMessages-status.ffmpeg.messages.length,i++){
+    for (let i=0; i<status.ffmpeg.maxMessages-status.ffmpeg.messages.length; i++){
         console.log();
     }
 

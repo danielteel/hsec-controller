@@ -91,7 +91,7 @@ function stripNoRender(str){
 
 function updateScreen(which, key, val) {
     if (key === 'messages') {
-        status[which].messages.push(stripNoRender(val));
+        status[which].messages.push(stripNoRender(String(val)));
         if (status[which].messages.length > status[which].maxMessages) {
             status[which].messages.shift();
         }

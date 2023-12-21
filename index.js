@@ -91,7 +91,7 @@ function stripNoRender(str){
 
 function updateScreen(which, key, val) {
     if (key === 'messages') {
-        status[which].messages.push(stripNoRender(String(val)));
+        status[which].messages.push(val);
         if (status[which].messages.length > status[which].maxMessages) {
             status[which].messages.shift();
         }
@@ -105,7 +105,7 @@ function updateScreen(which, key, val) {
     console.log('\t', status.webhook.active ? chalk.green('X') : chalk.yellow('.'), chalk.white('ACTIVE'));
     console.log('\t', chalk.yellow('MESSAGES'));
     for (let m of status.webhook.messages) {
-        console.log('\t\t', String(m).trim());
+        console.log('\t\t', stripNoRender(String(m).trim()));
     }
     for (let i=0; i<status.webhook.maxMessages-status.webhook.messages.length; i++){
         console.log();
@@ -123,7 +123,7 @@ function updateScreen(which, key, val) {
     console.log('\t',status.ffmpeg.running ? chalk.green('X') : chalk.yellow('.'), chalk.white('RUNNING'));
     console.log('\t',chalk.yellow('MESSAGES'));
     for (let m of status.ffmpeg.messages) {
-        console.log('\t\t', String(m).trim());
+        console.log('\t\t', stripNoRender(String(m).trim()));
     }
     for (let i=0; i<status.ffmpeg.maxMessages-status.ffmpeg.messages.length; i++){
         console.log();
@@ -136,7 +136,7 @@ function updateScreen(which, key, val) {
     console.log('\t', status.back.running ? chalk.green('X') : chalk.yellow('.'), chalk.white('RUNNING'));
     console.log('\t', chalk.yellow('MESSAGES'));
     for (let m of status.back.messages) {
-        console.log('\t\t', String(m).trim());
+        console.log('\t\t', stripNoRender(String(m).trim()));
     }
     for (let i=0; i<status.back.maxMessages-status.back.messages.length; i++){
         console.log();

@@ -27,7 +27,7 @@ let status = {
         installed: false,
         messages: [],
         running: false,
-        maxMessages: 6
+        maxMessages: 5
     },
     back: {
         dir: false,
@@ -35,7 +35,7 @@ let status = {
         installed: false,
         messages: [],
         running: false,
-        maxMessages: 6
+        maxMessages: 5
     }
 };
 
@@ -85,9 +85,13 @@ app.listen(process.env.GITPUSH_PORT, () => {
     updateScreen('webhook', 'active', true);
 })
 
+function stripNoRender(str){
+    return str.split('').filter(c => c.charCodeAt(0)>=32).join('');
+}
+
 function updateScreen(which, key, val) {
     if (key === 'messages') {
-        status[which].messages.push(val);
+        status[which].messages.push(stripNoRender(val));
         if (status[which].messages.length > status[which].maxMessages) {
             status[which].messages.shift();
         }
@@ -102,6 +106,9 @@ function updateScreen(which, key, val) {
     console.log('\t', chalk.yellow('MESSAGES'));
     for (let m of status.webhook.messages) {
         console.log('\t\t', String(m).trim());
+    }
+    for (let i=0;i<status.webhook.maxMessages-status.webhook.messages.length,i++){
+        console.log();
     }
     console.log();
     console.log(chalk.cyan('FRONT'));
@@ -118,6 +125,9 @@ function updateScreen(which, key, val) {
     for (let m of status.ffmpeg.messages) {
         console.log('\t\t', String(m).trim());
     }
+    for (let i=0;i<status.ffmpeg.maxMessages-status.ffmpeg.messages.length,i++){
+        console.log();
+    }
 
     console.log(chalk.cyan('BACK'));
     console.log('\t', status.back.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
@@ -127,6 +137,9 @@ function updateScreen(which, key, val) {
     console.log('\t', chalk.yellow('MESSAGES'));
     for (let m of status.back.messages) {
         console.log('\t\t', String(m).trim());
+    }
+    for (let i=0;i<status.back.maxMessages-status.back.messages.length,i++){
+        console.log();
     }
 }
 

@@ -107,7 +107,7 @@ function updateScreen(which, key, val) {
     for (let m of status.webhook.messages) {
         console.log('\t\t', String(m).trim());
     }
-    for (let i=0;i<status.webhook.maxMessages-status.webhook.messages.length,i++){
+    for (let i=0; i<status.webhook.maxMessages-status.webhook.messages.length; i++){
         console.log();
     }
     console.log();
@@ -138,7 +138,7 @@ function updateScreen(which, key, val) {
     for (let m of status.back.messages) {
         console.log('\t\t', String(m).trim());
     }
-    for (let i=0;i<status.back.maxMessages-status.back.messages.length,i++){
+    for (let i=0; i<status.back.maxMessages-status.back.messages.length; i++){
         console.log();
     }
 }

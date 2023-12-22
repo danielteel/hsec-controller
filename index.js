@@ -4,6 +4,7 @@ const process = require('node:process');
 const download = require('github-directory-downloader');
 const { mkdirSync, rmSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
+const fs = require('node:fs');
 const chalk = require('chalk');
 const app = require('express')();
 require('dotenv').config({ path: 'env.env' });
@@ -15,11 +16,14 @@ let status = {
     webhook: {
         active: false,
         messages: [],
-        maxMessages: 3
+        maxMessages: 2
     },
     front: {
         dir: false,
-        downloaded: false
+        downloaded: false,
+        installed: false,
+        built: false,
+        copied: false
     },
     ffmpeg:{
         dir: false,
@@ -27,7 +31,7 @@ let status = {
         installed: false,
         messages: [],
         running: false,
-        maxMessages: 5
+        maxMessages: 4
     },
     back: {
         dir: false,
@@ -35,7 +39,7 @@ let status = {
         installed: false,
         messages: [],
         running: false,
-        maxMessages: 5
+        maxMessages: 4
     }
 };
 
@@ -114,6 +118,9 @@ function updateScreen(which, key, val) {
     console.log(chalk.cyan('FRONT'));
     console.log('\t', status.front.dir ? chalk.green('X') : chalk.yellow('.'), chalk.white('DIRECTORY'));
     console.log('\t', status.front.downloaded ? chalk.green('X') : chalk.yellow('.'), chalk.white('DOWNLOADED'));
+    console.log('\t', status.front.installed ? chalk.green('X') : chalk.yellow('.'), chalk.white('INSTALLED'));
+    console.log('\t', status.front.built ? chalk.green('X') : chalk.yellow('.'), chalk.white('BUILT'));
+    console.log('\t', status.front.copied ? chalk.green('X') : chalk.yellow('.'), chalk.white('COPIED'));
     console.log();
 
     console.log(chalk.cyan('FFMPEG'));
@@ -142,37 +149,6 @@ function updateScreen(which, key, val) {
         console.log();
     }
 }
-
-//Get front end
-function doFrontend() {
-    updateScreen('front', 'downloaded', false);
-
-    try {
-        rmSync('/mnt/ramdisk/static', { recursive: true, force: true });
-    } catch (e) {
-        console.log(e);
-        process.exit(-1);
-    }
-
-    try {
-        mkdirSync('/mnt/ramdisk/static');
-    } catch (e) {
-        if (e.code !== 'EEXIST') {
-            console.log(e);
-            process.exit(-1);
-        }
-    }
-
-    updateScreen('front', 'dir', true);
-
-    download('https://github.com/danielteel/hsec-front/tree/main/build', '/mnt/ramdisk/static', { requests: 3, muteLog: true }).then((stats) => {
-        updateScreen('front', 'downloaded', true);
-    }).catch(e => {
-        console.log(e);
-        process.exit(-1);
-    })
-}
-
 
 //Get ffmpeg
 function doFFMPEG() {
@@ -268,4 +244,64 @@ function doBackend() {
     setTimeout(()=>{
         updateScreen('back', 'running', ++status.back.running);
     },250);
+}
+
+
+
+
+function doFrontend() {
+    status.front.installed = false;
+    status.front.built=false;
+    status.front.copied=false;
+    status.front.dir=false;
+    updateScreen('front', 'downloaded', false);
+
+    try {
+        mkdirSync('./front');
+    } catch (e) {
+        if (e.code !== 'EEXIST') {
+            console.log(e);
+            process.exit(-1);
+        }
+    }
+    updateScreen('front', 'dir', true);
+
+    try {
+        execSync('git clone https://github.com/danielteel/hsec-front', { cwd: path.join(__dirname, 'front'), stdio:'pipe' });
+    } catch { }
+    try {
+        execSync('git pull', { cwd: path.join(__dirname, 'front', 'hsec-front'), stdio:'pipe' });
+    } catch { }
+    updateScreen('front', 'downloaded', true);
+
+    try {
+        execSync('npm install', { cwd: path.join(__dirname, 'front', 'hsec-front'), stdio:'pipe' });
+    } catch { }
+    updateScreen('front', 'installed', true);
+
+    try {
+        execSync('npm run build', { cwd: path.join(__dirname, 'front', 'hsec-front'), stdio:'pipe'});
+        updateScreen('front', 'built', true);
+    } catch {
+        console.error('build failed');
+    }
+
+    try{
+        fs.rmSync(process.env.STATIC_DIR, {recursive: true, force: true});
+    }catch(e){
+        console.log('error trying to delete '+process.env.STATIC_DIR);
+    }
+
+    try {
+        fs.mkdirSync(process.env.STATIC_DIR);
+    }catch (e){        
+        if (e.code !== 'EEXIST') {
+            console.log('error trying to create '+process.env.STATIC_DIR);
+        }
+    }
+    try {
+        fs.cpSync(path.join(__dirname, 'front', 'hsec-front', 'build'), process.env.STATIC_DIR, { recursive: true });
+    }catch (e){
+        console.error(e);
+    }
 }

@@ -1,8 +1,7 @@
 
-const { execSync, spawn, exec } = require('node:child_process');
+const { execSync, spawn } = require('node:child_process');
 const process = require('node:process');
-const download = require('github-directory-downloader');
-const { mkdirSync, rmSync, writeFileSync } = require('node:fs');
+const { mkdirSync } = require('node:fs');
 const path = require('node:path');
 const fs = require('node:fs');
 const chalk = require('chalk');
@@ -45,8 +44,8 @@ let status = {
 
 
 doFrontend();
-doFFMPEG();
 doBackend();
+doFFMPEG();
 
 
 app.post('/controller/:secret', (req, res) => {
@@ -284,6 +283,7 @@ function doFrontend() {
         updateScreen('front', 'built', true);
     } catch {
         console.error('build failed');
+        process.exit(-1);
     }
 
     try{
@@ -297,11 +297,13 @@ function doFrontend() {
     }catch (e){        
         if (e.code !== 'EEXIST') {
             console.log('error trying to create '+process.env.STATIC_DIR);
+            process.exit(-1);
         }
     }
     try {
         fs.cpSync(path.join(__dirname, 'front', 'hsec-front', 'build'), process.env.STATIC_DIR, { recursive: true });
     }catch (e){
         console.error(e);
+        process.exit(-1);
     }
 }

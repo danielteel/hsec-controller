@@ -165,7 +165,7 @@ function doFrontend() {
 
     updateScreen('front', 'dir', true);
 
-    download('https://github.com/danielteel/hsec/tree/main/build', '/mnt/ramdisk/static', { requests: 3, muteLog: true }).then((stats) => {
+    download('https://github.com/danielteel/hsec-front/tree/main/build', '/mnt/ramdisk/static', { requests: 3, muteLog: true }).then((stats) => {
         updateScreen('front', 'downloaded', true);
     }).catch(e => {
         console.log(e);

@@ -302,6 +302,7 @@ function doFrontend() {
     }
     try {
         fs.cpSync(path.join(__dirname, 'front', 'hsec-front', 'build'), process.env.STATIC_DIR, { recursive: true });
+        updateScreen('front', 'copied', true);
     }catch (e){
         console.error(e);
         process.exit(-1);

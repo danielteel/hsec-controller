@@ -43,9 +43,9 @@ let status = {
 };
 
 
-doFrontend();
 doBackend();
 doFFMPEG();
+doFrontend();
 
 
 app.post('/controller/:secret', (req, res) => {
